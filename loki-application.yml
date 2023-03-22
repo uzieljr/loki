@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+
+kind: Application
+
+metadata:
+  name: loki
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+
+spec:
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: loki
+  project: default  
+  source:
+    repoURL: 'git@github.com:uzieljr/loki.git'
+    path: loki-stack
+    targetRevision: HEAD
+    helm:
+      valueFiles:
+        - values.yaml
+  syncPolicy:
+    automated: 
+      prune: true
+      selfHeal: true
+      allowEmpty: true
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true
+      #- Replace=true
